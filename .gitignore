@@ -1,0 +1,7 @@
+# Ignore Folders
+/Parameters
+/Images
+
+# Ignore Filetypes
+*.pptx
+*.png
