@@ -13,7 +13,7 @@ import seaborn as sns
 
 
 def date_filename():
-    return re.sub('\ |\.|\:|\-', '_', str(datetime.datetime.utcnow())) + ".png"
+    return re.sub(r'\ |\.|\:|\-', '_', str(datetime.datetime.utcnow())) + ".png"
     
 
 main_dir = os.path.dirname(__file__)
@@ -24,10 +24,13 @@ bot_token = open(token_file, 'r').read()
 
 bot = commands.Bot(command_prefix='$aco ')
 
+post_colour= 0x03BDAB
+
 @bot.event
 async def on_ready():
+    print("\n")
     print(f"Logged in as {bot.user}")
-
+    print("\n")
 
 @bot.event
 async def on_message(message):
@@ -95,10 +98,72 @@ async def graph(ctx, graphtype):
     df = pd.DataFrame(messages, columns=['User', 'Message'])
 
     if graphtype == "messagecount":
+
+        filename = date_filename()
+        print("Date Filename: " + filename)
         sns.countplot(x='User', data=df)
-        plt.savefig(date_filename(), dpi=200)
-        # TODO - Post image to channel (embed)
-        # TODO - Delete image
+        plt.savefig(filename, dpi=200)
+
+        graph_path = main_dir + '/' + filename
+
+        embed = discord.Embed(
+            title="Message Count Graph",
+            description="Number of messages posted per user",
+            colour=post_colour
+            )
+
+        graph_file = discord.File(graph_path, filename=filename)
+        attach_path = "attachment://" + filename
+        embed.set_image(url=attach_path)
+
+        embed.set_footer(text="Chart generated using Seaborn")
+
+        await ctx.channel.send(file=graph_file, embed=embed)
+
+        # Delete the local image
+        os.remove(graph_path)
+
+
+    elif graphtype == "wordcount":
+
+        df['Wordcount'] = df['Message'].str.split().str.len()
+
+        grouped = df.groupby('User', as_index=False)['Wordcount'].apply(sum).sort_values(by='Wordcount', ascending=False)
+
+        filename = date_filename()
+        sns.barplot(x='User', y='Wordcount', data=grouped)
+        plt.savefig(filename, dpi=200)
+
+        graph_path = main_dir + '/' + filename
+
+        embed = discord.Embed(
+            title="Word Count Graph",
+            description="Number of words posted per user",
+            colour=post_colour
+            )
+
+        graph_file = discord.File(graph_path, filename=filename)
+        attach_path = "attachment://" + filename
+        embed.set_image(url=attach_path)
+
+        embed.set_footer(text="Chart generated using Seaborn")
+
+        await ctx.channel.send(file=graph_file, embed=embed)
+
+        # Delete the local image
+        os.remove(graph_path)
+    
+    elif graphtype == "emojicount":
+        pass
+
+    elif graphtype == "reactcount":
+        pass
+
+    elif graphtype == "imagecount":
+        pass
+
+    else:
+        print("\nInvalid Input\n")
 
 
 
