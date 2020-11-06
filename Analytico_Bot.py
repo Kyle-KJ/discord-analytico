@@ -24,10 +24,16 @@ MESSAGE_HISTORY = 50000
 
 
 main_dir = os.path.dirname(__file__)
-token_path = '/Parameters/Bot_Token.txt'
-token_file = main_dir + token_path
 
-bot_token = open(token_file, 'r').read()
+# Bot Authentication
+
+# Local Auth
+# token_path = '/Parameters/Bot_Token.txt'
+# token_file = main_dir + token_path
+# bot_token = open(token_file, 'r').read()
+
+# Heroku Auth
+bot_token = os.environ['BOT_TOKEN']
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 
