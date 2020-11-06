@@ -353,5 +353,6 @@ async def graph(ctx, *args):
         print("\nInvalid Input\n")
 
 
+# Run the bot
 
 bot.run(bot_token)
