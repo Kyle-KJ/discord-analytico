@@ -20,6 +20,7 @@ def date_filename():
 # Configurable Parameters
 COMMAND_PREFIX = '$aco '
 POST_COLOUR = 0x03BDAB
+MESSAGE_HISTORY = 50000
 
 
 main_dir = os.path.dirname(__file__)
@@ -133,13 +134,14 @@ async def messagecount(ctx, unit, value):
 
 @bot.command()
 async def graph(ctx, *args):
+    
     # TODO - Add date filters
 
     # Get Message History (as DataFrame)
     message_list = []
 
-    for chan in bot.guilds[0].text_channels:
-        channel_messages = await chan.history(limit=50000).flatten()
+    for chan in ctx.guild.text_channels:
+        channel_messages = await chan.history(limit=MESSAGE_HISTORY).flatten()
         message_list += channel_messages
 
     messages = []
@@ -147,8 +149,6 @@ async def graph(ctx, *args):
     for msg in message_list:
         message_data = [msg.author.name, msg.channel.name, msg.content]
         messages.append(message_data)
-    
-    #df = pd.DataFrame(messages, columns=['User', 'Channel', 'Message'])
 
     # Assign Filename for Image
     filename = date_filename()    
@@ -291,7 +291,7 @@ async def graph(ctx, *args):
         # Transform Data
         emoji_list = []
 
-        for emoji in bot.guilds[0].emojis:
+        for emoji in ctx.guild.emojis:
             emoji_data = [emoji.name, 0] 
             emoji_list.append(emoji_data)
 
