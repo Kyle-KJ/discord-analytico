@@ -28,12 +28,12 @@ main_dir = os.path.dirname(__file__)
 # Bot Authentication
 
 # Local Auth
-# token_path = '/Parameters/Bot_Token.txt'
-# token_file = main_dir + token_path
-# bot_token = open(token_file, 'r').read()
+token_path = '/Parameters/Bot_Token.txt'
+token_file = main_dir + token_path
+bot_token = open(token_file, 'r').read()
 
 # Heroku Auth
-bot_token = os.environ['BOT_TOKEN']
+# bot_token = os.environ['BOT_TOKEN']
 
 bot = commands.Bot(command_prefix=COMMAND_PREFIX)
 
@@ -171,7 +171,9 @@ async def graph(ctx, *args):
                 grouped = df.groupby('User').size().reset_index(name='Count')
                 
                 # Plot Chart and Save Image
-                sns.barplot(x='User', y='Count', data=grouped)
+                plot = sns.barplot(x='Count', y='User', data=grouped, orient='h')
+                _, ylabels = plt.yticks()
+                plot.set_yticklabels(ylabels, size=6)
                 plt.savefig(filename, dpi=200)
                 plt.clf()
 
@@ -199,7 +201,9 @@ async def graph(ctx, *args):
                 grouped = df.groupby('Channel').size().reset_index(name='Count')
 
                 # Plot Chart and Save Image
-                sns.barplot(x='Channel', y='Count', data=grouped)
+                plot = sns.barplot(x='Channel', y='Count', data=grouped)
+                _, xlabels = plt.xticks()
+                plot.set_xticklabels(xlabels, size=6)
                 plt.savefig(filename, dpi=200)
                 plt.clf()
 
@@ -236,7 +240,9 @@ async def graph(ctx, *args):
             grouped = df.groupby('User', as_index=False)['Wordcount'].apply(sum).sort_values(by='Wordcount', ascending=False)
 
             # Plot Chart and Save Image
-            sns.barplot(x='User', y='Wordcount', data=grouped)
+            plot = sns.barplot(x='Wordcount', y='User', data=grouped, orient='h')
+            _, ylabels = plt.yticks()
+            plot.set_yticklabels(ylabels, size=6)
             plt.savefig(filename, dpi=200)
             plt.clf()
 
@@ -267,7 +273,9 @@ async def graph(ctx, *args):
             grouped = df.groupby('User', as_index=False)['Wordcount'].apply(sum).sort_values(by='Wordcount', ascending=False)
 
             # Plot Chart and Save Image
-            sns.barplot(x='User', y='Wordcount', data=grouped)
+            plot = sns.barplot(x='Wordcount', y='User', data=grouped, orient='h')
+            _, ylabels = plt.yticks()
+            plot.set_yticklabels(ylabels, size=6)
             plt.savefig(filename, dpi=200)
             plt.clf()
 
@@ -317,10 +325,12 @@ async def graph(ctx, *args):
                 if emoji[0] in used:
                     emoji[1] += 1
 
-        df = pd.DataFrame(emoji_list, columns=['Emoji', 'Count'])
+        df = pd.DataFrame(emoji_list, columns=['Emoji', 'Count']).sort_values(by='Count', ascending=False)
 
         # Plot Chart and Save Image
-        sns.barplot(x='Emoji', y='Count', data=df)
+        plot = sns.barplot(x='Count', y='Emoji', data=df, orient='h')
+        _, ylabels = plt.yticks()
+        plot.set_yticklabels(ylabels, size=6)
         plt.savefig(filename, dpi=200)
         plt.clf()
 
